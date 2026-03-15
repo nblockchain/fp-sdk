@@ -47,10 +47,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/fp-sdk.git"
+    "url": "git+https://github.com/nblockchain/fp-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/fp-sdk/issues"
+    "url": "https://github.com/nblockchain/fp-sdk/issues"
   },
-  "homepage": "https://github.com/yourusername/fp-sdk#readme"
+  "homepage": "https://github.com/nblockchain/fp-sdk#readme"
 }
