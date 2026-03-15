@@ -34,7 +34,7 @@
     "utility",
     "sdk"
   ],
-  "author": "",
+  "author": "Andres G. Aragoneses",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",

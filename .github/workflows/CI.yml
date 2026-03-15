@@ -5,23 +5,29 @@ on:
   pull_request:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 21.x]
-
+  buildAndTest:
+    runs-on: ubuntu-24.04
+    container:
+      image: "ubuntu:24.04"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+      - name: Install dependencies
+        run: |
+          apt update --yes
+
+          # NOTE: do not change the below with an `actions/setup-node` step! or it
+          # would make this CI job entirely pointless
+          apt install --yes npm
+
+      - name: Print versions
+        run: node --version && npm --version
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Build package
+        run: npm run build
 
       - name: Run linter (type check)
         run: npm run lint
@@ -29,5 +35,3 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Build package
-        run: npm run build
