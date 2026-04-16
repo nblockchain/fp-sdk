@@ -16,8 +16,9 @@ jobs:
         run: |
           apt update --yes
 
-          # NOTE: do not change the below with an `actions/setup-node` step! or it
-          # would make this CI job entirely pointless
+          # NOTE: do not change the below with an `actions/setup-node` step!
+          # we don't like our CI steps to be a blackbox that is not easier to mimic by devs
+          # (and this way we're testing with official Ubuntu packages, not whatever the GitHub/NodeJS guys fancy)
           apt install --yes --no-install-recommends npm
 
       - name: Print versions
