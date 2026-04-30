@@ -6,5 +6,7 @@ export type { Option } from './option.js';
 export { Err, Ok } from './result.js';
 export type { Result } from './result.js';
 
-// Export TypeHelpers
+// Export helpers
 export { TypeHelpers } from './typeHelpers.js';
+export { Empty } from './empty.js';
+
