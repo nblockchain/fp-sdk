@@ -82,7 +82,7 @@ jobs:
       - name: Print versions
         run: node --version && npm --version
       - name: Install NPM dependencies
-        run: npm ci
+        run: npm install
       - name: Build package
         run: npm run build
       - name: Run linter (type check)
