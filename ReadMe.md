@@ -7,7 +7,7 @@ After more than 20 years of programming, and being a only a tiny bit seasoned on
 
 The AI replied with something both unexpected and surprising — TL;DR: _"nah, rather use `undefined` instead of `null`, if you're going to avoid one of them"_.
 
-<details><summary>Here was the full reply:</summary>
+<details><summary>Here was the full reply: (click on the '▶' symbol to expand)</summary>
 
 > While eliminating one of the "nullish" values (either `null` or `undefined`) is a popular strategy to simplify code, the consensus in the TypeScript community is
 > not to use only `null`. In fact, many developers and the TypeScript team itself often prefer using **`undefined`** exclusively. [1, 2, 3, 4, 5]
