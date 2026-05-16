@@ -258,27 +258,28 @@ function isInstanceOf(variable: unknown, type: unknown): boolean {
     if (type === null || type === undefined) {
         throw new Error("Invalid 'type' parameter: null or undefined");
     }
-    if (typeof type === "string") {
-        return typeof variable === type.toLowerCase();
-    }
     return (variable as object).constructor === type;
 }
 
 class Foo {}
 class Bar {}
 
+const str = "hello";
+const n = 42;
+const foo = new Foo();
+
 // prints true
-console.log(isInstanceOf("hello", String));
+console.log(typeof str === "string");
 // prints false
-console.log(isInstanceOf(42, String));
+console.log(typeof n === "string");
 // prints true
-console.log(isInstanceOf(42, Number));
+console.log(typeof n === "number");
 // prints false
-console.log(isInstanceOf("hello", Number));
+console.log(typeof str === "number");
 // prints true
-console.log(isInstanceOf(new Foo(), Foo));
+console.log(isInstanceOf(foo, Foo));
 // prints false
-console.log(isInstanceOf(new Foo(), Bar));
+console.log(isInstanceOf(foo, Bar));
 ```
 
 **Effect.ts**
@@ -288,27 +289,31 @@ import { Predicate, Schema } from "effect";
 class Foo {}
 class Bar {}
 
-function isInstanceOf<T>(value: unknown, Expected: new (...args: any[]) => T): boolean {
+function isInstanceOf<T>(value: unknown, expected: new (...args: any[]) => T): boolean {
     try {
-        Schema.decodeUnknownSync(Schema.instanceOf(Expected))(value);
+        Schema.decodeUnknownSync(Schema.instanceOf(expected))(value);
         return true;
     } catch {
         return false;
     }
 }
 
+const str = "hello";
+const n = 42;
+const foo = new Foo();
+
 // prints true
-console.log(Predicate.isString("hello"));
+console.log(Predicate.isString(str));
 // prints false
-console.log(Predicate.isString(42));
+console.log(Predicate.isString(n));
 // prints true
-console.log(Predicate.isNumber(42));
+console.log(Predicate.isNumber(n));
 // prints false
-console.log(Predicate.isNumber("hello"));
+console.log(Predicate.isNumber(str));
 // prints true
-console.log(isInstanceOf(new Foo(), Foo));
+console.log(isInstanceOf(foo, Foo));
 // prints false
-console.log(isInstanceOf(new Bar(), Foo));
+console.log(isInstanceOf(foo, Bar));
 ```
 
 **fp-sdk**
@@ -318,16 +323,20 @@ import { TypeHelpers } from "fp-sdk";
 class Foo {}
 class Bar {}
 
+const str = "hello";
+const n = 42;
+const foo = new Foo();
+
 // prints true
-console.log(TypeHelpers.isInstanceOf("hello", String));
+console.log(TypeHelpers.isInstanceOf(str, String));
 // prints false
-console.log(TypeHelpers.isInstanceOf(42, String));
+console.log(TypeHelpers.isInstanceOf(n, String));
 // prints true
-console.log(TypeHelpers.isInstanceOf(42, Number));
+console.log(TypeHelpers.isInstanceOf(n, Number));
 // prints false
-console.log(TypeHelpers.isInstanceOf("hello", Number));
+console.log(TypeHelpers.isInstanceOf(str, Number));
 // prints true
-console.log(TypeHelpers.isInstanceOf(new Foo(), Foo));
+console.log(TypeHelpers.isInstanceOf(foo, Foo));
 // prints false
-console.log(TypeHelpers.isInstanceOf(new Bar(), Foo));
+console.log(TypeHelpers.isInstanceOf(foo, Bar));
 ```
