@@ -121,6 +121,17 @@ Enter **fp-sdk**.
 
 ## Code Snippets
 
+### Package Footprint
+
+Before looking at code, a word on bloat — because **size / complexity** matters:
+
+| Aspect                  | Raw TS  | Effect.ts                                                                | fp-sdk                                                                   |
+| ---                     | ---     | ---                                                                      | ---                                                                      |
+| Installed/unpacked size | N/A (0) | ❌ [~27 MB](https://npmgraph.js.org/?q=effect#select=effect%403.21.2)    | ✅ [~27 KB](https://npmgraph.js.org/?q=fp-sdk#select=fp-sdk%400.1.2)     |
+| External dependencies   | N/A (0) | ❌ [2 deps](https://www.npmjs.com/package/effect?activeTab=dependencies) | ✅ [0 deps](https://www.npmjs.com/package/fp-sdk?activeTab=dependencies) |
+
+---
+
 ### 1. Option Types
 
 A value that might not exist.
@@ -191,7 +202,6 @@ if (user instanceof None) {
 
 | Aspect                           | Raw TS                           | Effect.ts                        | fp-sdk                                    |
 | ---                              | ---                              | ---                              | ---                                       |
-| No external dependencies         | ✅                               | ❌ (~1 MB+)                      | ✅ (tiny)                                 |
 | Clean return type                | ✅ `User \| null`                | ❌ `Option.Option<User>`         | ✅ `Option<User>`                         |
 | Explicit absence check           | ❌ `=== null` typo risk          | ❌ nested callbacks              | ✅ `instanceof None`                      |
 | Branching style                  | ✅ natural `if/else`             | ❌ `pipe` + `match` ceremony     | ✅ natural `if/else`                      |
@@ -277,7 +287,6 @@ if (result instanceof Err) {
 
 | Aspect                          | Raw TS                                   | Effect.ts                                | fp-sdk                                   |
 | ---                             | ---                                      | ---                                      | ---                                      |
-| No external dependencies        | ✅                                       | ❌ (~1 MB+)                              | ✅ (tiny)                                |
 | Clear error/success naming      | ✅                                       | ❌ `Either` / `Left` / `Right` jargon    | ✅ `Err` / `Ok`                          |
 | Clean return type               | ❌ `{ ok, ... }` boilerplate             | ❌ `Either.Either<E,T>` duplication      | ✅ `Result<T,E>`                         |
 | Mistake-proof branching         | ❌ `!result.ok` is subtle                | ❌ `onLeft` / `onRight` arrows           | ✅ `instanceof Err`                      |
@@ -384,7 +393,6 @@ console.log(TypeHelpers.isInstanceOf(foo, Bar));
 
 | Aspect                            | Raw TS                           | Effect.ts                                     | fp-sdk                               |
 | ---                               | ---                              | ---                                           | ---                                  |
-| No external dependencies          | ✅                               | ❌ (~1 MB+)                                   | ✅ (tiny)                            |
 | One API for primitives + classes  | ❌ `typeof` vs `constructor`     | ❌ `Predicate` + `Schema` split               | ✅ `isInstanceOf` unified            |
 | Typo-proof primitive checks       | ❌ `"string"` can be misspelled  | ✅                                            | ✅ pass `String` constructor         |
 | `===` assignment/typo risk        | ❌ `=` or `==` trap              | ✅                                            | ✅                                   |
