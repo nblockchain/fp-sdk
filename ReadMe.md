@@ -1,13 +1,15 @@
 fp-sdk [![NPM Version](https://img.shields.io/npm/v/fp-sdk)](https://www.npmjs.com/package/fp-sdk)
 ======
 
-After more than 20 years of programming, and being a bit seasoned on the TypeScript/JavaScript space, one morning I decided to ask an AI this question:
+After more than 20 years of programming, and being a only a tiny bit seasoned on the TypeScript/JavaScript space (as opposed to other langs), one morning I decided to ask an AI this question:
 
 > given that typescript tries to improve javascript, so to speak, wouldn't it be better if devs using typescript stop using `undefined`, and just use `null`, to prevent one of the main javascript pitfalls?
 
+Tony Hoare famously called the introduction of `null` his "billion-dollar mistake". But JavaScript and TypeScript didn't stop at one — they gave us *two* distinct nullish values: `null` **and** `undefined`. If a single `null` cost a billion dollars, the JS/TS twin-nullish disaster is a **trillion-dollar mistake**.
+
 The AI replied with something both unexpected and surprising — TL;DR: _"nah, rather use `undefined` instead of `null`, if you're going to avoid one of them"_.
 
-Here was the full reply:
+<details><summary>Here was the full reply: (click on the '▶' symbol to expand)</summary>
 
 > While eliminating one of the "nullish" values (either `null` or `undefined`) is a popular strategy to simplify code, the consensus in the TypeScript community is
 > not to use only `null`. In fact, many developers and the TypeScript team itself often prefer using **`undefined`** exclusively. [1, 2, 3, 4, 5]
@@ -103,6 +105,8 @@ Here was the full reply:
 > [20] https://javascript.plainenglish.io/mastering-null-undefined-in-typescript-optional-chaining-nullish-coalescing-best-practices-b1404be1e77d
 >
 > [21] https://jameshenry.blog/typescript-null-and-undefined-types/
+
+</details>
 
 Fascinating.
 
