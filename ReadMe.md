@@ -118,3 +118,284 @@ NO! There has to be a better way.
 And, no, adopting the HUGELY BLOATED lib 'Effect.ts' is not it. We need something way more simple.
 
 Enter **fp-sdk**.
+
+## Code Snippets
+
+### Package Footprint
+
+Before looking at code, a word on bloat — because **size / complexity** matters:
+
+| Aspect                  | Raw TS  | Effect.ts                                                                | fp-sdk                                                                   |
+| ---                     | ---     | ---                                                                      | ---                                                                      |
+| Installed/unpacked size | N/A (0) | ❌ [~27 MB](https://npmgraph.js.org/?q=effect#select=effect%403.21.2)    | ✅ [~27 KB](https://npmgraph.js.org/?q=fp-sdk#select=fp-sdk%400.1.2)     |
+| External dependencies   | N/A (0) | ❌ [2 deps](https://www.npmjs.com/package/effect?activeTab=dependencies) | ✅ [0 deps](https://www.npmjs.com/package/fp-sdk?activeTab=dependencies) |
+
+---
+
+### 1. Option Types
+
+A value that might not exist.
+
+**Raw TypeScript (no library)**
+```ts
+function findUser(id: number): User | null {
+    return db.findById(id) ?? null;
+}
+
+const user = findUser(1);
+if (user === null) {
+    // prints "Not found"
+    console.log("Not found");
+    furtherOperations();
+} else {
+    // prints "Alice"
+    console.log(user.name);
+    furtherOperations();
+}
+```
+
+**Effect.ts**
+```ts
+import { Option, pipe } from "effect";
+
+function findUser(id: number): Option.Option<User> {
+    return Option.fromNullable(db.findById(id));
+}
+
+const maybeUser = findUser(1);
+pipe(
+    maybeUser,
+    Option.match({
+        // prints "Not found"
+        onNone: () => {
+            console.log("Not found");
+            furtherOperations();
+        },
+        // prints "Alice"
+        onSome: (user) => {
+            console.log(user.name);
+            furtherOperations();
+        }
+    })
+);
+```
+
+**fp-sdk**
+```ts
+import { None, OptionHelpers, Option } from "fp-sdk";
+
+function findUser(id: number): Option<User> {
+    return OptionHelpers.ofObj(db.findById(id));
+}
+
+const user = findUser(1);
+if (user instanceof None) {
+    // prints "Not found"
+    console.log("Not found");
+    furtherOperations();
+} else {
+    // prints "Alice"
+    console.log(user.value.name);
+    furtherOperations();
+}
+```
+
+| Aspect                           | Raw TS                           | Effect.ts                        | fp-sdk                                    |
+| ---                              | ---                              | ---                              | ---                                       |
+| Clean return type                | ✅ `User \| null`                | ❌ `Option.Option<User>`         | ✅ `Option<User>`                         |
+| Explicit absence check           | ❌ `=== null` typo risk          | ❌ nested callbacks              | ✅ `instanceof None`                      |
+| Branching style                  | ✅ natural `if/else`             | ❌ `pipe` + `match` ceremony     | ✅ natural `if/else`                      |
+| Forces handling the "empty" case | ❌ no                            | ✅ yes                           | ✅ yes                                    |
+| Safe without `strictNullChecks`  | ❌ no type safety without strict | ❌ no enforcement without strict | ✅ runtime `instanceof None` always works |
+
+---
+
+### 2. Result Types
+
+A computation that might fail.
+
+**Raw TypeScript (no library)**
+```ts
+type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
+
+function parseNumber(input: string): Result<number, string> {
+    const n = Number(input);
+    if (isNaN(n)) {
+        return { ok: false, error: "Invalid number" };
+    }
+    return { ok: true, value: n };
+}
+
+const result = parseNumber("abc");
+if (!result.ok) {
+    // prints "Invalid number"
+    console.log(result.error);
+    furtherOperations();
+} else {
+    // prints 42
+    console.log(result.value);
+    furtherOperations();
+}
+```
+
+**Effect.ts**
+```ts
+import { Either } from "effect";
+
+function parseNumber(input: string): Either.Either<string, number> {
+    const n = Number(input);
+    return isNaN(n) ? Either.left("Invalid number") : Either.right(n);
+}
+
+Either.match(parseNumber("abc"), {
+    onLeft: (err) => {
+        // prints "Invalid number"
+        console.log(err);
+        furtherOperations();
+    },
+    onRight: (val) => {
+        // prints 42
+        console.log(val);
+        furtherOperations();
+    }
+});
+```
+
+**fp-sdk**
+```ts
+import { Ok, Err, Result } from "fp-sdk";
+
+function parseNumber(input: string): Result<number, string> {
+    const n = Number(input);
+    if (isNaN(n)) {
+        return new Err("Invalid number");
+    }
+    return new Ok(n);
+}
+
+const result = parseNumber("abc");
+if (result instanceof Err) {
+    // prints "Invalid number"
+    console.log(result.error);
+    furtherOperations();
+} else {
+    // prints 42
+    console.log(result.value);
+    furtherOperations();
+}
+```
+
+| Aspect                          | Raw TS                                   | Effect.ts                                | fp-sdk                                   |
+| ---                             | ---                                      | ---                                      | ---                                      |
+| Clear error/success naming      | ✅                                       | ❌ `Left` / `Right` weird jargon         | ✅ `Err` / `Ok` simple terms             |
+| Clean return type               | ❌ `{ ok, ... }` boilerplate             | ❌ `Either.Either<E,T>` duplication      | ✅ `Result<T,E>`                         |
+| Mistake-proof branching         | ❌ `!result.ok` is subtle                | ❌ `onLeft` / `onRight` arrows           | ✅ `instanceof Err`                      |
+| Branching style                 | ✅ natural `if/else`                     | ❌ object with 2 callbacks               | ✅ natural `if/else`                     |
+| Safe without `strictNullChecks` | ❌ `!result.ok` invisible without strict | ❌ `Either` guard ignored without strict | ✅ runtime `instanceof Err` always works |
+
+---
+
+### 3. Type Helpers
+
+Check if a value is an instance of a given type.
+
+**Raw TypeScript (no library)**
+```ts
+class Foo {}
+class Bar {}
+
+const str = "hello";
+const n = 42;
+const foo = new Foo();
+
+function isInstanceOf(variable: unknown, type: unknown): boolean {
+    if (variable === null || variable === undefined) {
+        throw new Error("Invalid 'variable' parameter: null or undefined");
+    }
+    if (type === null || type === undefined) {
+        throw new Error("Invalid 'type' parameter: null or undefined");
+    }
+    return (variable as object).constructor === type;
+}
+
+// prints true
+console.log(typeof str === "string");
+// prints false
+console.log(typeof n === "string");
+// prints true
+console.log(typeof n === "number");
+// prints false
+console.log(typeof str === "number");
+// prints true
+console.log(isInstanceOf(foo, Foo));
+// prints false
+console.log(isInstanceOf(foo, Bar));
+```
+
+**Effect.ts**
+```ts
+import { Predicate, Schema } from "effect";
+
+class Foo {}
+class Bar {}
+
+const str = "hello";
+const n = 42;
+const foo = new Foo();
+
+function isInstanceOf<T>(value: unknown, expected: new (...args: any[]) => T): boolean {
+    try {
+        Schema.decodeUnknownSync(Schema.instanceOf(expected))(value);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+// prints true
+console.log(Predicate.isString(str));
+// prints false
+console.log(Predicate.isString(n));
+// prints true
+console.log(Predicate.isNumber(n));
+// prints false
+console.log(Predicate.isNumber(str));
+// prints true
+console.log(isInstanceOf(foo, Foo));
+// prints false
+console.log(isInstanceOf(foo, Bar));
+```
+
+**fp-sdk**
+```ts
+import { TypeHelpers } from "fp-sdk";
+
+class Foo {}
+class Bar {}
+
+const str = "hello";
+const n = 42;
+const foo = new Foo();
+
+// prints true
+console.log(TypeHelpers.isInstanceOf(str, String));
+// prints false
+console.log(TypeHelpers.isInstanceOf(n, String));
+// prints true
+console.log(TypeHelpers.isInstanceOf(n, Number));
+// prints false
+console.log(TypeHelpers.isInstanceOf(str, Number));
+// prints true
+console.log(TypeHelpers.isInstanceOf(foo, Foo));
+// prints false
+console.log(TypeHelpers.isInstanceOf(foo, Bar));
+```
+
+| Aspect                            | Raw TS                           | Effect.ts                                     | fp-sdk                               |
+| ---                               | ---                              | ---                                           | ---                                  |
+| One API for primitives + classes  | ❌ `typeof` vs `constructor`     | ❌ `Predicate` + `Schema` split               | ✅ `isInstanceOf` unified            |
+| Typo-proof primitive checks       | ❌ `"string"` can be misspelled  | ✅                                            | ✅ pass `String` constructor         |
+| `===` assignment/typo risk        | ❌ `=` or `==` trap              | ✅                                            | ✅                                   |
+| Boolean result (no throw)         | ✅ `typeof` / manual helper      | ❌ `Schema` throws unless wrapped             | ✅ `boolean` always                  |
+| Argument order (value, then type) | ✅                               | ❌ `Schema.instanceOf(type)(value)` backwards | ✅ `isInstanceOf(value, type)`       |
+| Safe without `strictNullChecks`   | ❌ loses compile-time protection | ❌ `Schema` throws at runtime instead         | ✅ runtime `instanceof` always works |
