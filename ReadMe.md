@@ -265,6 +265,7 @@ function isInstanceOf(variable: unknown, type: unknown): boolean {
 }
 
 class Foo {}
+class Bar {}
 
 // prints true
 console.log(isInstanceOf("hello", String));
@@ -272,21 +273,34 @@ console.log(isInstanceOf("hello", String));
 console.log(isInstanceOf(42, Number));
 // prints true
 console.log(isInstanceOf(new Foo(), Foo));
+// prints false
+console.log(isInstanceOf(new Foo(), Bar));
 ```
 
 **Effect.ts**
 ```ts
 import { Predicate, Schema } from "effect";
 
+class Foo {}
+class Bar {}
+
+function isInstanceOf<T>(value: unknown, Expected: new (...args: any[]) => T): boolean {
+    try {
+        Schema.decodeUnknownSync(Schema.instanceOf(Expected))(value);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 // prints true
 console.log(Predicate.isString("hello"));
 // prints true
 console.log(Predicate.isNumber(42));
-
-// Classes: Schema validation (throws on mismatch)
-class Foo {}
-// prints Foo {}
-console.log(Schema.decodeUnknownSync(Schema.instanceOf(Foo))(new Foo()));
+// prints true
+console.log(isInstanceOf(new Foo(), Foo));
+// prints false
+console.log(isInstanceOf(new Bar(), Foo));
 ```
 
 **fp-sdk**
@@ -294,6 +308,7 @@ console.log(Schema.decodeUnknownSync(Schema.instanceOf(Foo))(new Foo()));
 import { TypeHelpers } from "fp-sdk";
 
 class Foo {}
+class Bar {}
 
 // prints true
 console.log(TypeHelpers.isInstanceOf("hello", String));
@@ -301,4 +316,6 @@ console.log(TypeHelpers.isInstanceOf("hello", String));
 console.log(TypeHelpers.isInstanceOf(42, Number));
 // prints true
 console.log(TypeHelpers.isInstanceOf(new Foo(), Foo));
+// prints false
+console.log(TypeHelpers.isInstanceOf(new Bar(), Foo));
 ```
