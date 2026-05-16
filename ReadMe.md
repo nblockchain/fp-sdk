@@ -261,12 +261,12 @@ console.log(isInstanceOf(42, Number));
 import { Predicate, Schema } from "effect";
 
 // Primitives: scattered Predicate helpers
-Predicate.isString("hello");
-Predicate.isNumber(42);
+console.log(Predicate.isString("hello"));
+console.log(Predicate.isNumber(42));
 
 // Classes: Schema validation (throws on mismatch)
 class Foo {}
-Schema.decodeUnknownSync(Schema.instanceOf(Foo))(new Foo());
+console.log(Schema.decodeUnknownSync(Schema.instanceOf(Foo))(new Foo()));
 ```
 
 **fp-sdk**
