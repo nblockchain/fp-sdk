@@ -264,10 +264,14 @@ function isInstanceOf(variable: unknown, type: unknown): boolean {
     return (variable as object).constructor === type;
 }
 
+class Foo {}
+
 // prints true
 console.log(isInstanceOf("hello", String));
 // prints true
 console.log(isInstanceOf(42, Number));
+// prints true
+console.log(isInstanceOf(new Foo(), Foo));
 ```
 
 **Effect.ts**
@@ -288,6 +292,8 @@ console.log(Schema.decodeUnknownSync(Schema.instanceOf(Foo))(new Foo()));
 **fp-sdk**
 ```ts
 import { TypeHelpers } from "fp-sdk";
+
+class Foo {}
 
 // prints true
 console.log(TypeHelpers.isInstanceOf("hello", String));
