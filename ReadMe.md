@@ -269,8 +269,12 @@ class Bar {}
 
 // prints true
 console.log(isInstanceOf("hello", String));
+// prints false
+console.log(isInstanceOf(42, String));
 // prints true
 console.log(isInstanceOf(42, Number));
+// prints false
+console.log(isInstanceOf("hello", Number));
 // prints true
 console.log(isInstanceOf(new Foo(), Foo));
 // prints false
@@ -295,8 +299,12 @@ function isInstanceOf<T>(value: unknown, Expected: new (...args: any[]) => T): b
 
 // prints true
 console.log(Predicate.isString("hello"));
+// prints false
+console.log(Predicate.isString(42));
 // prints true
 console.log(Predicate.isNumber(42));
+// prints false
+console.log(Predicate.isNumber("hello"));
 // prints true
 console.log(isInstanceOf(new Foo(), Foo));
 // prints false
@@ -312,8 +320,12 @@ class Bar {}
 
 // prints true
 console.log(TypeHelpers.isInstanceOf("hello", String));
+// prints false
+console.log(TypeHelpers.isInstanceOf(42, String));
 // prints true
 console.log(TypeHelpers.isInstanceOf(42, Number));
+// prints false
+console.log(TypeHelpers.isInstanceOf("hello", Number));
 // prints true
 console.log(TypeHelpers.isInstanceOf(new Foo(), Foo));
 // prints false
