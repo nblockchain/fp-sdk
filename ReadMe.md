@@ -133,8 +133,10 @@ function findUser(id: number): User | null {
 
 const user = findUser(1);
 if (user === null) {
+    // prints "Not found"
     console.log("Not found");
 } else {
+    // prints "Alice"
     console.log(user.name);
 }
 ```
@@ -148,7 +150,9 @@ const maybeUser = Option.fromNullable(db.findById(1));
 pipe(
     maybeUser,
     Option.match({
+        // prints "Not found"
         onNone: () => console.log("Not found"),
+        // prints "Alice"
         onSome: (user) => console.log(user.name)
     })
 );
@@ -164,8 +168,10 @@ function findUser(id: number): Option<User> {
 
 const user = findUser(1);
 if (user instanceof None) {
+    // prints "Not found"
     console.log("Not found");
 } else {
+    // prints "Alice"
     console.log(user.value.name);
 }
 ```
@@ -190,8 +196,10 @@ function parseNumber(input: string): Result<number, string> {
 
 const result = parseNumber("abc");
 if (!result.ok) {
+    // prints "Invalid number"
     console.log(result.error);
 } else {
+    // prints 42
     console.log(result.value);
 }
 ```
@@ -206,7 +214,9 @@ function parseNumber(input: string): Either.Either<string, number> {
 }
 
 Either.match(parseNumber("abc"), {
+    // prints "Invalid number"
     onLeft: (err) => console.log(err),
+    // prints 42
     onRight: (val) => console.log(val)
 });
 ```
@@ -225,8 +235,10 @@ function parseNumber(input: string): Result<number, string> {
 
 const result = parseNumber("abc");
 if (result instanceof Err) {
+    // prints "Invalid number"
     console.log(result.error);
 } else {
+    // prints 42
     console.log(result.value);
 }
 ```
@@ -252,7 +264,9 @@ function isInstanceOf(variable: unknown, type: unknown): boolean {
     return (variable as object).constructor === type;
 }
 
+// prints true
 console.log(isInstanceOf("hello", String));
+// prints true
 console.log(isInstanceOf(42, Number));
 ```
 
@@ -260,12 +274,14 @@ console.log(isInstanceOf(42, Number));
 ```ts
 import { Predicate, Schema } from "effect";
 
-// Primitives: scattered Predicate helpers
+// prints true
 console.log(Predicate.isString("hello"));
+// prints true
 console.log(Predicate.isNumber(42));
 
 // Classes: Schema validation (throws on mismatch)
 class Foo {}
+// prints Foo {}
 console.log(Schema.decodeUnknownSync(Schema.instanceOf(Foo))(new Foo()));
 ```
 
@@ -273,7 +289,10 @@ console.log(Schema.decodeUnknownSync(Schema.instanceOf(Foo))(new Foo()));
 ```ts
 import { TypeHelpers } from "fp-sdk";
 
+// prints true
 console.log(TypeHelpers.isInstanceOf("hello", String));
+// prints true
 console.log(TypeHelpers.isInstanceOf(42, Number));
+// prints true
 console.log(TypeHelpers.isInstanceOf(new Foo(), Foo));
 ```
