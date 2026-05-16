@@ -189,13 +189,14 @@ if (user instanceof None) {
 }
 ```
 
-| Aspect                           | Raw TS                  | Effect.ts                    | fp-sdk               |
-| ---                              | ---                     | ---                          | ---                  |
-| No external dependencies         | ✅                      | ❌ (~1 MB+)                  | ✅ (tiny)            |
-| Clean return type                | ✅ `User \| null`       | ❌ `Option.Option<User>`     | ✅ `Option<User>`    |
-| Explicit absence check           | ❌ `=== null` typo risk | ❌ nested callbacks          | ✅ `instanceof None` |
-| Branching style                  | ✅ natural `if/else`    | ❌ `pipe` + `match` ceremony | ✅ natural `if/else` |
-| Forces handling the "empty" case | ❌ no                   | ✅ yes                       | ✅ yes               |
+| Aspect                           | Raw TS                           | Effect.ts                        | fp-sdk                                    |
+| ---                              | ---                              | ---                              | ---                                       |
+| No external dependencies         | ✅                               | ❌ (~1 MB+)                      | ✅ (tiny)                                 |
+| Clean return type                | ✅ `User \| null`                | ❌ `Option.Option<User>`         | ✅ `Option<User>`                         |
+| Explicit absence check           | ❌ `=== null` typo risk          | ❌ nested callbacks              | ✅ `instanceof None`                      |
+| Branching style                  | ✅ natural `if/else`             | ❌ `pipe` + `match` ceremony     | ✅ natural `if/else`                      |
+| Forces handling the "empty" case | ❌ no                            | ✅ yes                           | ✅ yes                                    |
+| Safe without `strictNullChecks`  | ❌ no type safety without strict | ❌ no enforcement without strict | ✅ runtime `instanceof None` always works |
 
 ---
 
@@ -274,13 +275,14 @@ if (result instanceof Err) {
 }
 ```
 
-| Aspect                     | Raw TS                       | Effect.ts                             | fp-sdk               |
-| ---                        | ---                          | ---                                   | ---                  |
-| No external dependencies   | ✅                           | ❌ (~1 MB+)                           | ✅ (tiny)            |
-| Clear error/success naming | ✅                           | ❌ `Either` / `Left` / `Right` jargon | ✅ `Err` / `Ok`      |
-| Clean return type          | ❌ `{ ok, ... }` boilerplate | ❌ `Either.Either<E,T>` duplication   | ✅ `Result<T,E>`     |
-| Mistake-proof branching    | ❌ `!result.ok` is subtle    | ❌ `onLeft` / `onRight` arrows        | ✅ `instanceof Err`  |
-| Branching style            | ✅ natural `if/else`         | ❌ object with 2 callbacks            | ✅ natural `if/else` |
+| Aspect                          | Raw TS                                   | Effect.ts                                | fp-sdk                                   |
+| ---                             | ---                                      | ---                                      | ---                                      |
+| No external dependencies        | ✅                                       | ❌ (~1 MB+)                              | ✅ (tiny)                                |
+| Clear error/success naming      | ✅                                       | ❌ `Either` / `Left` / `Right` jargon    | ✅ `Err` / `Ok`                          |
+| Clean return type               | ❌ `{ ok, ... }` boilerplate             | ❌ `Either.Either<E,T>` duplication      | ✅ `Result<T,E>`                         |
+| Mistake-proof branching         | ❌ `!result.ok` is subtle                | ❌ `onLeft` / `onRight` arrows           | ✅ `instanceof Err`                      |
+| Branching style                 | ✅ natural `if/else`                     | ❌ object with 2 callbacks               | ✅ natural `if/else`                     |
+| Safe without `strictNullChecks` | ❌ `!result.ok` invisible without strict | ❌ `Either` guard ignored without strict | ✅ runtime `instanceof Err` always works |
 
 ---
 
@@ -380,11 +382,12 @@ console.log(TypeHelpers.isInstanceOf(foo, Foo));
 console.log(TypeHelpers.isInstanceOf(foo, Bar));
 ```
 
-| Aspect                            | Raw TS                          | Effect.ts                                     | fp-sdk                         |
-| ---                               | ---                             | ---                                           | ---                            |
-| No external dependencies          | ✅                              | ❌ (~1 MB+)                                   | ✅ (tiny)                      |
-| One API for primitives + classes  | ❌ `typeof` vs `constructor`    | ❌ `Predicate` + `Schema` split               | ✅ `isInstanceOf` unified      |
-| Typo-proof primitive checks       | ❌ `"string"` can be misspelled | ✅                                            | ✅ pass `String` constructor   |
-| `===` assignment/typo risk        | ❌ `=` or `==` trap             | ✅                                            | ✅                             |
-| Boolean result (no throw)         | ✅ `typeof` / manual helper     | ❌ `Schema` throws unless wrapped             | ✅ `boolean` always            |
-| Argument order (value, then type) | ✅                              | ❌ `Schema.instanceOf(type)(value)` backwards | ✅ `isInstanceOf(value, type)` |
+| Aspect                            | Raw TS                           | Effect.ts                                     | fp-sdk                               |
+| ---                               | ---                              | ---                                           | ---                                  |
+| No external dependencies          | ✅                               | ❌ (~1 MB+)                                   | ✅ (tiny)                            |
+| One API for primitives + classes  | ❌ `typeof` vs `constructor`     | ❌ `Predicate` + `Schema` split               | ✅ `isInstanceOf` unified            |
+| Typo-proof primitive checks       | ❌ `"string"` can be misspelled  | ✅                                            | ✅ pass `String` constructor         |
+| `===` assignment/typo risk        | ❌ `=` or `==` trap              | ✅                                            | ✅                                   |
+| Boolean result (no throw)         | ✅ `typeof` / manual helper      | ❌ `Schema` throws unless wrapped             | ✅ `boolean` always                  |
+| Argument order (value, then type) | ✅                               | ❌ `Schema.instanceOf(type)(value)` backwards | ✅ `isInstanceOf(value, type)`       |
+| Safe without `strictNullChecks`   | ❌ loses compile-time protection | ❌ `Schema` throws at runtime instead         | ✅ runtime `instanceof` always works |
