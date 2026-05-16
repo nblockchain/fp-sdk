@@ -147,8 +147,11 @@ if (user === null) {
 ```ts
 import { Option, pipe } from "effect";
 
-const maybeUser = Option.fromNullable(db.findById(1));
+function findUser(id: number): Option.Option<User> {
+    return Option.fromNullable(db.findById(id));
+}
 
+const maybeUser = findUser(1);
 pipe(
     maybeUser,
     Option.match({
