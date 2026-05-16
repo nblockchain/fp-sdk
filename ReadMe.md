@@ -5,6 +5,8 @@ After more than 20 years of programming, and being a only a tiny bit seasoned on
 
 > given that typescript tries to improve javascript, so to speak, wouldn't it be better if devs using typescript stop using `undefined`, and just use `null`, to prevent one of the main javascript pitfalls?
 
+Tony Hoare famously called the introduction of `null` his "billion-dollar mistake". But JavaScript and TypeScript didn't stop at one — they gave us *two* distinct nullish values: `null` **and** `undefined`. If a single `null` cost a billion dollars, the JS/TS twin-nullish disaster is a **trillion-dollar mistake**.
+
 The AI replied with something both unexpected and surprising — TL;DR: _"nah, rather use `undefined` instead of `null`, if you're going to avoid one of them"_.
 
 <details><summary>Here was the full reply: (click on the '▶' symbol to expand)</summary>
