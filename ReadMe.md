@@ -274,6 +274,13 @@ Check if a value is an instance of a given type.
 
 **Raw TypeScript (no library)**
 ```ts
+class Foo {}
+class Bar {}
+
+const str = "hello";
+const n = 42;
+const foo = new Foo();
+
 function isInstanceOf(variable: unknown, type: unknown): boolean {
     if (variable === null || variable === undefined) {
         throw new Error("Invalid 'variable' parameter: null or undefined");
@@ -283,13 +290,6 @@ function isInstanceOf(variable: unknown, type: unknown): boolean {
     }
     return (variable as object).constructor === type;
 }
-
-class Foo {}
-class Bar {}
-
-const str = "hello";
-const n = 42;
-const foo = new Foo();
 
 // prints true
 console.log(typeof str === "string");
@@ -312,6 +312,10 @@ import { Predicate, Schema } from "effect";
 class Foo {}
 class Bar {}
 
+const str = "hello";
+const n = 42;
+const foo = new Foo();
+
 function isInstanceOf<T>(value: unknown, expected: new (...args: any[]) => T): boolean {
     try {
         Schema.decodeUnknownSync(Schema.instanceOf(expected))(value);
@@ -320,10 +324,6 @@ function isInstanceOf<T>(value: unknown, expected: new (...args: any[]) => T): b
         return false;
     }
 }
-
-const str = "hello";
-const n = 42;
-const foo = new Foo();
 
 // prints true
 console.log(Predicate.isString(str));
