@@ -135,9 +135,11 @@ const user = findUser(1);
 if (user === null) {
     // prints "Not found"
     console.log("Not found");
+    furtherOperations();
 } else {
     // prints "Alice"
     console.log(user.name);
+    furtherOperations();
 }
 ```
 
@@ -151,9 +153,15 @@ pipe(
     maybeUser,
     Option.match({
         // prints "Not found"
-        onNone: () => console.log("Not found"),
+        onNone: () => {
+            console.log("Not found");
+            furtherOperations();
+        },
         // prints "Alice"
-        onSome: (user) => console.log(user.name)
+        onSome: (user) => {
+            console.log(user.name);
+            furtherOperations();
+        }
     })
 );
 ```
@@ -170,9 +178,11 @@ const user = findUser(1);
 if (user instanceof None) {
     // prints "Not found"
     console.log("Not found");
+    furtherOperations();
 } else {
     // prints "Alice"
     console.log(user.value.name);
+    furtherOperations();
 }
 ```
 
@@ -198,9 +208,11 @@ const result = parseNumber("abc");
 if (!result.ok) {
     // prints "Invalid number"
     console.log(result.error);
+    furtherOperations();
 } else {
     // prints 42
     console.log(result.value);
+    furtherOperations();
 }
 ```
 
@@ -214,10 +226,16 @@ function parseNumber(input: string): Either.Either<string, number> {
 }
 
 Either.match(parseNumber("abc"), {
-    // prints "Invalid number"
-    onLeft: (err) => console.log(err),
-    // prints 42
-    onRight: (val) => console.log(val)
+    onLeft: (err) => {
+        // prints "Invalid number"
+        console.log(err);
+        furtherOperations();
+    },
+    onRight: (val) => {
+        // prints 42
+        console.log(val);
+        furtherOperations();
+    }
 });
 ```
 
@@ -237,9 +255,11 @@ const result = parseNumber("abc");
 if (result instanceof Err) {
     // prints "Invalid number"
     console.log(result.error);
+    furtherOperations();
 } else {
     // prints 42
     console.log(result.value);
+    furtherOperations();
 }
 ```
 
