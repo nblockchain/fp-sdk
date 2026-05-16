@@ -118,3 +118,162 @@ NO! There has to be a better way.
 And, no, adopting the HUGELY BLOATED lib 'Effect.ts' is not it. We need something way more simple.
 
 Enter **fp-sdk**.
+
+## Code Snippets
+
+### 1. Option Types
+
+A value that might not exist.
+
+**Raw TypeScript (no library)**
+```ts
+function findUser(id: number): User | null {
+    return db.findById(id) ?? null;
+}
+
+const user = findUser(1);
+if (user === null) {
+    console.log("Not found");
+} else {
+    console.log(user.name);
+}
+```
+
+**Effect.ts**
+```ts
+import { Option, pipe } from "effect";
+
+const maybeUser = Option.fromNullable(db.findById(1));
+
+pipe(
+    maybeUser,
+    Option.match({
+        onNone: () => console.log("Not found"),
+        onSome: (user) => console.log(user.name)
+    })
+);
+```
+
+**fp-sdk**
+```ts
+import { None, OptionHelpers, Option } from "fp-sdk";
+
+function findUser(id: number): Option<User> {
+    return OptionHelpers.ofObj(db.findById(id));
+}
+
+const user = findUser(1);
+if (user instanceof None) {
+    console.log("Not found");
+} else {
+    console.log(user.value.name);
+}
+```
+
+---
+
+### 2. Result Types
+
+A computation that might fail.
+
+**Raw TypeScript (no library)**
+```ts
+type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
+
+function parseNumber(input: string): Result<number, string> {
+    const n = Number(input);
+    if (isNaN(n)) {
+        return { ok: false, error: "Invalid number" };
+    }
+    return { ok: true, value: n };
+}
+
+const result = parseNumber("abc");
+if (!result.ok) {
+    console.log(result.error);
+} else {
+    console.log(result.value);
+}
+```
+
+**Effect.ts**
+```ts
+import { Either } from "effect";
+
+function parseNumber(input: string): Either.Either<string, number> {
+    const n = Number(input);
+    return isNaN(n) ? Either.left("Invalid number") : Either.right(n);
+}
+
+Either.match(parseNumber("abc"), {
+    onLeft: (err) => console.log(err),
+    onRight: (val) => console.log(val)
+});
+```
+
+**fp-sdk**
+```ts
+import { Ok, Err, Result } from "fp-sdk";
+
+function parseNumber(input: string): Result<number, string> {
+    const n = Number(input);
+    if (isNaN(n)) {
+        return new Err("Invalid number");
+    }
+    return new Ok(n);
+}
+
+const result = parseNumber("abc");
+if (result instanceof Err) {
+    console.log(result.error);
+} else {
+    console.log(result.value);
+}
+```
+
+---
+
+### 3. Type Helpers
+
+Check if a value is an instance of a given type.
+
+**Raw TypeScript (no library)**
+```ts
+function isInstanceOf(variable: unknown, type: unknown): boolean {
+    if (variable === null || variable === undefined) {
+        throw new Error("Invalid 'variable' parameter: null or undefined");
+    }
+    if (type === null || type === undefined) {
+        throw new Error("Invalid 'type' parameter: null or undefined");
+    }
+    if (typeof type === "string") {
+        return typeof variable === type.toLowerCase();
+    }
+    return (variable as object).constructor === type;
+}
+
+console.log(isInstanceOf("hello", String));
+console.log(isInstanceOf(42, Number));
+```
+
+**Effect.ts**
+```ts
+import { Predicate, Schema } from "effect";
+
+// Primitives: scattered Predicate helpers
+Predicate.isString("hello");
+Predicate.isNumber(42);
+
+// Classes: Schema validation (throws on mismatch)
+class Foo {}
+Schema.decodeUnknownSync(Schema.instanceOf(Foo))(new Foo());
+```
+
+**fp-sdk**
+```ts
+import { TypeHelpers } from "fp-sdk";
+
+console.log(TypeHelpers.isInstanceOf("hello", String));
+console.log(TypeHelpers.isInstanceOf(42, Number));
+console.log(TypeHelpers.isInstanceOf(new Foo(), Foo));
+```
