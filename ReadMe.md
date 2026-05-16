@@ -287,7 +287,7 @@ if (result instanceof Err) {
 
 | Aspect                          | Raw TS                                   | Effect.ts                                | fp-sdk                                   |
 | ---                             | ---                                      | ---                                      | ---                                      |
-| Clear error/success naming      | ✅                                       | ❌ `Either` / `Left` / `Right` jargon    | ✅ `Err` / `Ok`                          |
+| Clear error/success naming      | ✅                                       | ❌ `Left` / `Right` weird jargon         | ✅ `Err` / `Ok` simple terms             |
 | Clean return type               | ❌ `{ ok, ... }` boilerplate             | ❌ `Either.Either<E,T>` duplication      | ✅ `Result<T,E>`                         |
 | Mistake-proof branching         | ❌ `!result.ok` is subtle                | ❌ `onLeft` / `onRight` arrows           | ✅ `instanceof Err`                      |
 | Branching style                 | ✅ natural `if/else`                     | ❌ object with 2 callbacks               | ✅ natural `if/else`                     |
